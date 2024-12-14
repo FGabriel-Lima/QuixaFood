@@ -8,4 +8,4 @@ Criar uma branch para cada feature que vai implementar
 ### Padrões de Commit
 - Para features: "feat: descrição mais clara possível da alteração"
 ### Pull Request
-Ao finalizar o desenvolvimento na brach criada fazer um pull resquest para a brach principal
+Ao finalizar o desenvolvimento na branch criada fazer um pull resquest para a branch principal
