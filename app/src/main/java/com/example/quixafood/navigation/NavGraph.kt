@@ -7,6 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -20,7 +21,7 @@ import com.example.quixafood.ui.screens.FavoritesScreen
 import com.example.quixafood.ui.screens.HelpScreen
 import com.example.quixafood.ui.screens.HomeScreen
 import com.example.quixafood.ui.screens.SettingsScreen
-
+import com.example.quixafood.ui.screens.SearchScreen
 
 sealed class BottomBarScreen(val route: String, val icon:
 @Composable () -> Unit, val label: String) {
@@ -53,6 +54,16 @@ sealed class BottomBarScreen(val route: String, val icon:
                 contentDescription = "Help") },
         label = "Ajuda"
     )
+    object Search : BottomBarScreen(
+        route = "search",
+        icon = {
+            androidx.compose.material3.Icon(
+                Icons.Default.Search,  // Ícone de busca
+                contentDescription = "Buscar"
+            )
+        },
+        label = "Buscar"
+    )
 }
 
 @ExperimentalMaterial3Api
@@ -61,6 +72,7 @@ fun NavGraph() {
     val navController = rememberNavController()
     Scaffold(
         bottomBar = {
+            // Passando o navController para o BottomNavigationBar
             BottomNavigationBar(navController = navController)
         }
     ) { innerPadding ->
@@ -103,25 +115,26 @@ fun NavGraph() {
                     }
                 )
             }
+
             // Tela de Favoritos
             composable(BottomBarScreen.Favorites.route) {
                 FavoritesScreen()
             }
+
             // Tela de Configurações
             composable(BottomBarScreen.Settings.route) {
                 SettingsScreen()
             }
+
             // Tela de Ajuda
             composable(BottomBarScreen.Help.route) {
-                HelpScreen()
+                HelpScreen(navController = navController)
             }
-            // Tela de Detalhes
-//            composable("details/{foodName}") {
-//                    backStackEntry ->
-//                val foodName = backStackEntry.arguments?.getString("foodName")
-//                val selectedFood = foodList.first { it.name == foodName }
-//                DetailsScreen(selectedFood)
-//            }
+
+            // Tela de Busca
+            composable(BottomBarScreen.Search.route) {
+                SearchScreen() // Adiciona a tela de busca
+            }
         }
     }
 }

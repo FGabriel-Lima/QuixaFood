@@ -15,9 +15,11 @@ import com.example.quixafood.navigation.BottomBarScreen
 fun BottomNavigationBar(navController: NavController) {
     val screens = listOf(
         BottomBarScreen.Home,
-        BottomBarScreen.Favorites
+        BottomBarScreen.Favorites,
+        BottomBarScreen.Search,
+        BottomBarScreen.Settings
     )
-    val currentDestination = navController.currentBackStackEntryAsState ().value?.destination
+    val currentDestination = navController.currentBackStackEntryAsState().value?.destination
     NavigationBar {
         screens.forEach { screen ->
             NavigationBarItem(
@@ -31,7 +33,7 @@ fun BottomNavigationBar(navController: NavController) {
                 },
                 icon = screen.icon,
                 label = { Text(screen.label) },
-                colors = NavigationBarItemDefaults .colors(
+                colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = MaterialTheme.colorScheme.primary,
                     unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant
                 )
