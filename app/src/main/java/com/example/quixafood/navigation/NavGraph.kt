@@ -133,7 +133,7 @@ fun NavGraph() {
 
             // Tela de Busca
             composable(BottomBarScreen.Search.route) {
-                SearchScreen() // Adiciona a tela de busca
+                SearchScreen(navController = navController)
             }
         }
     }
