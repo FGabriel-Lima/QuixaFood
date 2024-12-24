@@ -1,13 +1,17 @@
 package com.example.quixafood.ui.screens
 
 import android.content.Context
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import com.example.quixafood.models.mockItens
@@ -73,19 +77,32 @@ fun FavoritesScreen(
         }
     ) { innerPadding ->
         val favoriteItems = mockItens.filter { it.isFavorite.value }
-        Column(modifier = Modifier.padding(innerPadding)) {
-            LazyColumn {
-                items(favoriteItems){ item ->
-                    ItemCardView(
-                        itens = item,
-                        onFavoriteClick = {
-                            item.isFavorite.value = !item.isFavorite.value
-                        },
-                        onDetailClick = {
-                            navigateTo(navController, "details/${item.name}", true, true, false)
-                        })
+        if (favoriteItems.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Você ainda não adicionou favoritos."
+                )
+            }
+        } else {
+            Column(modifier = Modifier.padding(innerPadding)) {
+                LazyColumn {
+                    items(favoriteItems) { item ->
+                        ItemCardView(
+                            itens = item,
+                            onFavoriteClick = {
+                                item.isFavorite.value = !item.isFavorite.value
+                            },
+                            onDetailClick = {
+                                navigateTo(navController, "details/${item.name}", true, true, false)
+                            })
+                        }
+                    }
                 }
             }
         }
-    }
 }
