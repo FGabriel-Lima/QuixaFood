@@ -16,7 +16,9 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.quixafood.models.mockItens
 import com.example.quixafood.ui.components.BottomNavigationBar
+import com.example.quixafood.ui.screens.DetailsScreen
 import com.example.quixafood.ui.screens.FavoritesScreen
 import com.example.quixafood.ui.screens.HelpScreen
 import com.example.quixafood.ui.screens.HomeScreen
@@ -111,14 +113,23 @@ fun NavGraph() {
             // Tela de Favoritos
             composable(BottomBarScreen.Favorites.route) {
                 FavoritesScreen(
-//                    onFoodSelected = { food ->
-//                        navController.navigate("details/${planet.name}"
-//                        )
-//                    },
-//                    onFavoriteToggle = { food ->
-//                        food.isFavorite =
-//                            !food.isFavorite
-//                    }
+                    onHomeClick = {
+                        navigateTo(navController, BottomBarScreen.Home.route)
+                    },
+                    onFavoritesClick = {
+                        navigateTo(navController, BottomBarScreen.Favorites.route)
+                    },
+                    onSettingsClick = {
+                        navigateTo(navController, BottomBarScreen.Settings.route, restoreState = false)
+                    },
+                    onHelpClick = {
+                        navigateTo(navController, BottomBarScreen.Help.route, restoreState = false)
+                    },
+                    onLogoutClick = { context: Context ->
+                        logout(context)
+                    },
+                    navController,
+                    ::navigateTo
                 )
             }
             // Tela de Configurações
@@ -130,12 +141,12 @@ fun NavGraph() {
                 HelpScreen()
             }
             // Tela de Detalhes
-//            composable("details/{foodName}") {
-//                    backStackEntry ->
-//                val foodName = backStackEntry.arguments?.getString("foodName")
-//                val selectedFood = foodList.first { it.name == foodName }
-//                DetailsScreen(selectedFood)
-//            }
+            composable("details/{itemName}") {
+                    backStackEntry ->
+                val itemName = backStackEntry.arguments?.getString("itemName")
+                val selectedItem = mockItens.first { it.name == itemName }
+                DetailsScreen(selectedItem)
+            }
         }
     }
 }
