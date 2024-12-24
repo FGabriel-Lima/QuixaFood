@@ -12,6 +12,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -55,6 +56,24 @@ sealed class BottomBarScreen(val route: String, val icon:
     )
 }
 
+private fun navigateTo(
+    navController: NavController,
+    route: String,
+    inclusive: Boolean = true,
+    launchSingleTop: Boolean = true,
+    restoreState: Boolean = true
+) {
+    navController.navigate(route) {
+        popUpTo(navController.graph.startDestinationId) { this.inclusive = inclusive }
+        this.launchSingleTop = launchSingleTop
+        this.restoreState = restoreState
+    }
+}
+
+private fun logout(context: Context) {
+    Toast.makeText(context, "Logout realizado com sucesso!", Toast.LENGTH_SHORT).show()
+}
+
 @ExperimentalMaterial3Api
 @Composable
 fun NavGraph() {
@@ -73,39 +92,34 @@ fun NavGraph() {
             composable(BottomBarScreen.Home.route) {
                 HomeScreen(
                     onHomeClick = {
-                        navController.navigate(BottomBarScreen.Home.route) {
-                            popUpTo(navController.graph.startDestinationId) { inclusive = true }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
+                        navigateTo(navController, BottomBarScreen.Home.route)
                     },
                     onFavoritesClick = {
-                        navController.navigate(BottomBarScreen.Favorites.route) {
-                            popUpTo(navController.graph.startDestinationId) { inclusive = true }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
+                        navigateTo(navController, BottomBarScreen.Favorites.route)
                     },
                     onSettingsClick = {
-                        navController.navigate(BottomBarScreen.Settings.route) {
-                            popUpTo(navController.graph.startDestinationId) { inclusive = true }
-                            launchSingleTop = true
-                        }
+                        navigateTo(navController, BottomBarScreen.Settings.route, restoreState = false)
                     },
                     onHelpClick = {
-                        navController.navigate(BottomBarScreen.Help.route) {
-                            popUpTo(navController.graph.startDestinationId) { inclusive = true }
-                            launchSingleTop = true
-                        }
+                        navigateTo(navController, BottomBarScreen.Help.route, restoreState = false)
                     },
                     onLogoutClick = { context: Context ->
-                        Toast.makeText(context, "Logout realizado com sucesso!", Toast.LENGTH_SHORT).show()
+                        logout(context)
                     }
                 )
             }
             // Tela de Favoritos
             composable(BottomBarScreen.Favorites.route) {
-                FavoritesScreen()
+                FavoritesScreen(
+//                    onFoodSelected = { food ->
+//                        navController.navigate("details/${planet.name}"
+//                        )
+//                    },
+//                    onFavoriteToggle = { food ->
+//                        food.isFavorite =
+//                            !food.isFavorite
+//                    }
+                )
             }
             // Tela de Configurações
             composable(BottomBarScreen.Settings.route) {
