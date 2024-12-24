@@ -18,42 +18,6 @@ import com.example.quixafood.models.mockItens
 import com.example.quixafood.ui.components.ItemCardView
 import com.example.quixafood.ui.components.TopAppBarWithMenu
 
-
-
-
-//        if (favoritePlanets.isEmpty()) {
-//            // Exibe o texto padrão quando não há favoritos
-//            Box(
-//                modifier = Modifier
-//                    .fillMaxSize()
-//                    .padding(innerPadding),
-//                contentAlignment = Alignment.Center
-//            ) {Text(
-//                text = "Você ainda não adicionou favoritos.",
-//                style = MaterialTheme.typography.titleMedium,
-//                textAlign = TextAlign.Center,
-//                color = MaterialTheme.colorScheme.onSurfaceVariant
-//            )
-//            }
-//        } else {
-            // Exibe a lista de favoritos
-//            LazyColumn(
-//                verticalArrangement = Arrangement.spacedBy(8.dp),
-//                modifier = Modifier
-//                    .padding(innerPadding)
-//                    .padding(horizontal = 8.dp)
-//            ) {
-//                items(favoritePlanets) { planet ->
-//                    PlanetListItem(
-//                        planet = planet,
-//                        onPlanetSelected = { onPlanetSelected(it) },
-//                        onFavoriteToggle = { onFavoriteToggle(it) }
-//                    )
-//                }
-//            }
-//        }
-//    }
-//}
 @ExperimentalMaterial3Api
 @Composable
 fun FavoritesScreen(
