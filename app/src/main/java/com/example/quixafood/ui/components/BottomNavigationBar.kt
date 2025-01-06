@@ -8,9 +8,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
 
 @Composable
@@ -19,13 +17,12 @@ fun BottomNavigationBar(navController: NavController) {
         BottomBarItem("home", Icons.Default.Home, "Tela Inicial"),
         BottomBarItem("favorites", Icons.Default.Favorite, "Favoritos"),
         BottomBarItem("search", Icons.Default.Search, "Buscar"),
-        BottomBarItem("settings", Icons.Default.Settings, "Configurações")
     )
 
     val currentDestination = navController.currentBackStackEntryAsState().value?.destination
 
     NavigationBar(
-        containerColor = Color.Red // Cor de fundo da barra
+        containerColor = Color.Red
     ) {
         items.forEach { screen ->
             NavigationBarItem(

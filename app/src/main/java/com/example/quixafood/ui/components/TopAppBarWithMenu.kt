@@ -27,22 +27,15 @@ import androidx.compose.ui.text.style.TextOverflow
 fun TopAppBarWithMenu(
     onHomeClick: () -> Unit,
     onFavoritesClick: () -> Unit,
-    onSettingsClick: () -> Unit,
     onHelpClick: () -> Unit,
-    onLogoutClick: (Context) -> Unit
+    onLogoutClick: (Context) -> Unit,
+    onSettingsClick: () -> Unit // Adicionando o parâmetro onSettingsClick
 ) {
     val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }
     TopAppBar(
         title = {
             Row(verticalAlignment = Alignment.Top) {
-//                Image(
-//                    painter = painterResource(id = R.drawable.icon), // Icone
-//                    contentDescription = "App Logo",
-//                    modifier = Modifier
-//                        .size(30.dp)
-//                        .padding(end = 8.dp)
-//                )
                 Text(
                     text = "QuixaFood",
                     style = MaterialTheme.typography.titleLarge,
@@ -77,17 +70,17 @@ fun TopAppBarWithMenu(
                     }
                 )
                 DropdownMenuItem(
-                    text = { Text("Configurações") },
-                    onClick = {
-                        expanded = false
-                        onSettingsClick()
-                    }
-                )
-                DropdownMenuItem(
                     text = { Text("Ajuda") },
                     onClick = {
                         expanded = false
                         onHelpClick()
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("Configurações") },
+                    onClick = {
+                        expanded = false
+                        onSettingsClick()  // Chama a navegação para configurações
                     }
                 )
                 DropdownMenuItem(

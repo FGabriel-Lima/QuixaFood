@@ -20,49 +20,34 @@ import com.example.quixafood.ui.components.BottomNavigationBar
 import com.example.quixafood.ui.screens.FavoritesScreen
 import com.example.quixafood.ui.screens.HelpScreen
 import com.example.quixafood.ui.screens.HomeScreen
-import com.example.quixafood.ui.screens.SettingsScreen
 import com.example.quixafood.ui.screens.SearchScreen
+import com.example.quixafood.ui.screens.SettingsScreen
 
-sealed class BottomBarScreen(val route: String, val icon:
-@Composable () -> Unit, val label: String) {
+sealed class BottomBarScreen(val route: String, val icon: @Composable () -> Unit, val label: String) {
     object Home : BottomBarScreen(
         route = "home",
-        icon = {
-            androidx.compose.material3.Icon(
-                Icons.Default.Home,
-                contentDescription = "Tela Inicial") },
+        icon = { androidx.compose.material3.Icon(Icons.Default.Home, contentDescription = "Tela Inicial") },
         label = "Tela Inicial"
     )
     object Favorites : BottomBarScreen(
         route = "favorites",
-        icon = {
-            androidx.compose.material3.Icon(Icons.Default.Favorite,
-                contentDescription = "Favorites") },
+        icon = { androidx.compose.material3.Icon(Icons.Default.Favorite, contentDescription = "Favoritos") },
         label = "Favoritos"
-    )
-    object Settings : BottomBarScreen(
-        route = "settings",
-        icon = {
-            androidx.compose.material3.Icon(Icons.Default.Settings,
-                contentDescription = "Settings") },
-        label = "Configurações"
     )
     object Help : BottomBarScreen(
         route = "help",
-        icon = {
-            androidx.compose.material3.Icon(Icons.Default.Info,
-                contentDescription = "Help") },
+        icon = { androidx.compose.material3.Icon(Icons.Default.Info, contentDescription = "Ajuda") },
         label = "Ajuda"
     )
     object Search : BottomBarScreen(
         route = "search",
-        icon = {
-            androidx.compose.material3.Icon(
-                Icons.Default.Search,  // Ícone de busca
-                contentDescription = "Buscar"
-            )
-        },
+        icon = { androidx.compose.material3.Icon(Icons.Default.Search, contentDescription = "Buscar") },
         label = "Buscar"
+    )
+    object Settings : BottomBarScreen( // Tela de Configurações
+        route = "settings",
+        icon = { androidx.compose.material3.Icon(Icons.Default.Settings, contentDescription = "Configurações") },
+        label = "Configurações"
     )
 }
 
@@ -72,7 +57,6 @@ fun NavGraph() {
     val navController = rememberNavController()
     Scaffold(
         bottomBar = {
-            // Passando o navController para o BottomNavigationBar
             BottomNavigationBar(navController = navController)
         }
     ) { innerPadding ->
@@ -98,12 +82,6 @@ fun NavGraph() {
                             restoreState = true
                         }
                     },
-                    onSettingsClick = {
-                        navController.navigate(BottomBarScreen.Settings.route) {
-                            popUpTo(navController.graph.startDestinationId) { inclusive = true }
-                            launchSingleTop = true
-                        }
-                    },
                     onHelpClick = {
                         navController.navigate(BottomBarScreen.Help.route) {
                             popUpTo(navController.graph.startDestinationId) { inclusive = true }
@@ -112,6 +90,9 @@ fun NavGraph() {
                     },
                     onLogoutClick = { context: Context ->
                         Toast.makeText(context, "Logout realizado com sucesso!", Toast.LENGTH_SHORT).show()
+                    },
+                    onSettingsClick = {
+                        navController.navigate(BottomBarScreen.Settings.route)
                     }
                 )
             }
@@ -119,11 +100,6 @@ fun NavGraph() {
             // Tela de Favoritos
             composable(BottomBarScreen.Favorites.route) {
                 FavoritesScreen()
-            }
-
-            // Tela de Configurações
-            composable(BottomBarScreen.Settings.route) {
-                SettingsScreen()
             }
 
             // Tela de Ajuda
@@ -135,6 +111,13 @@ fun NavGraph() {
             composable(BottomBarScreen.Search.route) {
                 SearchScreen(navController = navController)
             }
+
+            // Tela de Configurações
+            composable(BottomBarScreen.Settings.route) {
+                SettingsScreen()
+            }
+
         }
     }
 }
+

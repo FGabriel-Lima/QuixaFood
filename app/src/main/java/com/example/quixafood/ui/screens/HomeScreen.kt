@@ -18,24 +18,24 @@ import com.example.quixafood.ui.components.TopAppBarWithMenu
 fun HomeScreen(
     onHomeClick: () -> Unit,
     onFavoritesClick: () -> Unit,
-    onSettingsClick: () -> Unit,
     onHelpClick: () -> Unit,
-    onLogoutClick: (Context) -> Unit
+    onLogoutClick: (Context) -> Unit,
+    onSettingsClick: () -> Unit  // Adicione o parâmetro aqui
 ) {
     Scaffold(
         topBar = {
             TopAppBarWithMenu(
                 onHomeClick = onHomeClick,
                 onFavoritesClick = onFavoritesClick,
-                onSettingsClick = onSettingsClick,
                 onHelpClick = onHelpClick,
-                onLogoutClick = onLogoutClick
+                onLogoutClick = onLogoutClick,
+                onSettingsClick = onSettingsClick  // Passando para o TopAppBar
             )
         }
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
             LazyColumn {
-                items(mockItens){ item ->
+                items(mockItens) { item ->
                     ItemCardView(itens = item, onFavoriteClick = {
                         item.isFavorite.value = !item.isFavorite.value
                     })
