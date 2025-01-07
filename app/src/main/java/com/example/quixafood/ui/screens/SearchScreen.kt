@@ -20,24 +20,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.quixafood.R
-
-data class Item(val name: String, val imageRes: Int)
-
-val itemList = listOf(
-    Item("Pizza", R.drawable.pizza),
-    Item("Hambúrguer", R.drawable.hamburguer),
-    Item("Sushi", R.drawable.sushi),
-    Item("Salada", R.drawable.salada),
-    Item("Frango", R.drawable.frango),
-    Item("Coca-Cola", R.drawable.cocacola)
-)
+import com.example.quixafood.models.Itens
+import com.example.quixafood.models.mockItens
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(navController: NavController) {
     var searchQuery by remember { mutableStateOf("") }
-    val filteredItems = itemList.filter { it.name.contains(searchQuery, ignoreCase = true) }
+    val filteredItems = mockItens.filter { it.name.contains(searchQuery, ignoreCase = true) }
 
     Column(modifier = Modifier.padding(16.dp)) {
 
@@ -76,10 +66,9 @@ fun SearchScreen(navController: NavController) {
                 color = Color.Gray
             )
         } else {
-            // Lista de alimentos filtrados
+            // Lista de itens filtrados
             LazyColumn {
                 items(filteredItems) { item ->
-                    // Card com imagem e nome do item
                     SearchItemCard(item = item)
                 }
             }
@@ -88,7 +77,7 @@ fun SearchScreen(navController: NavController) {
 }
 
 @Composable
-fun SearchItemCard(item: Item) {
+fun SearchItemCard(item: Itens) {
     val context = LocalContext.current
 
     Card(
@@ -116,7 +105,7 @@ fun SearchItemCard(item: Item) {
                     .padding(end = 16.dp)
             )
 
-            // Nome do item
+            // Nome, descrição e preço do item
             Column {
                 Text(
                     text = item.name,
@@ -125,9 +114,21 @@ fun SearchItemCard(item: Item) {
                     color = Color.Black
                 )
                 Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = item.description,
+                    fontSize = 14.sp,
+                    color = Color.Gray
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "R$ ${item.price}",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Red
+                )
+                Spacer(modifier = Modifier.height(4.dp))
                 Button(
                     onClick = {
-                        // Exibe o Toast aqui
                         Toast.makeText(context, "${item.name} selecionado", Toast.LENGTH_SHORT).show()
                     },
                     modifier = Modifier.padding(top = 8.dp),
