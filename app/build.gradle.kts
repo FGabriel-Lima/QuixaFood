@@ -50,6 +50,7 @@ android {
 }
 
 dependencies {
+    implementation("io.coil-kt:coil-compose:2.0.0")
     implementation (libs.androidx.navigation.compose)
 
     implementation(libs.androidx.core.ktx)
