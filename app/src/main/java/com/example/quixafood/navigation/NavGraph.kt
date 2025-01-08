@@ -12,10 +12,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.quixafood.models.mockItens
 import com.example.quixafood.ui.components.BottomNavigationBar
+import com.example.quixafood.ui.screens.DetailsScreen
 import com.example.quixafood.ui.screens.FavoritesScreen
 import com.example.quixafood.ui.screens.HelpScreen
 import com.example.quixafood.ui.screens.HomeScreen
@@ -55,6 +58,24 @@ sealed class BottomBarScreen(val route: String, val icon:
     )
 }
 
+private fun navigateTo(
+    navController: NavController,
+    route: String,
+    inclusive: Boolean = true,
+    launchSingleTop: Boolean = true,
+    restoreState: Boolean = true
+) {
+    navController.navigate(route) {
+        popUpTo(navController.graph.startDestinationId) { this.inclusive = inclusive }
+        this.launchSingleTop = launchSingleTop
+        this.restoreState = restoreState
+    }
+}
+
+private fun logout(context: Context) {
+    Toast.makeText(context, "Logout realizado com sucesso!", Toast.LENGTH_SHORT).show()
+}
+
 @ExperimentalMaterial3Api
 @Composable
 fun NavGraph() {
@@ -73,39 +94,43 @@ fun NavGraph() {
             composable(BottomBarScreen.Home.route) {
                 HomeScreen(
                     onHomeClick = {
-                        navController.navigate(BottomBarScreen.Home.route) {
-                            popUpTo(navController.graph.startDestinationId) { inclusive = true }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
+                        navigateTo(navController, BottomBarScreen.Home.route)
                     },
                     onFavoritesClick = {
-                        navController.navigate(BottomBarScreen.Favorites.route) {
-                            popUpTo(navController.graph.startDestinationId) { inclusive = true }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
+                        navigateTo(navController, BottomBarScreen.Favorites.route)
                     },
                     onSettingsClick = {
-                        navController.navigate(BottomBarScreen.Settings.route) {
-                            popUpTo(navController.graph.startDestinationId) { inclusive = true }
-                            launchSingleTop = true
-                        }
+                        navigateTo(navController, BottomBarScreen.Settings.route, restoreState = false)
                     },
                     onHelpClick = {
-                        navController.navigate(BottomBarScreen.Help.route) {
-                            popUpTo(navController.graph.startDestinationId) { inclusive = true }
-                            launchSingleTop = true
-                        }
+                        navigateTo(navController, BottomBarScreen.Help.route, restoreState = false)
                     },
                     onLogoutClick = { context: Context ->
-                        Toast.makeText(context, "Logout realizado com sucesso!", Toast.LENGTH_SHORT).show()
+                        logout(context)
                     }
                 )
             }
             // Tela de Favoritos
             composable(BottomBarScreen.Favorites.route) {
-                FavoritesScreen()
+                FavoritesScreen(
+                    onHomeClick = {
+                        navigateTo(navController, BottomBarScreen.Home.route)
+                    },
+                    onFavoritesClick = {
+                        navigateTo(navController, BottomBarScreen.Favorites.route)
+                    },
+                    onSettingsClick = {
+                        navigateTo(navController, BottomBarScreen.Settings.route, restoreState = false)
+                    },
+                    onHelpClick = {
+                        navigateTo(navController, BottomBarScreen.Help.route, restoreState = false)
+                    },
+                    onLogoutClick = { context: Context ->
+                        logout(context)
+                    },
+                    navController,
+                    ::navigateTo
+                )
             }
             // Tela de Configurações
             composable(BottomBarScreen.Settings.route) {
@@ -116,12 +141,12 @@ fun NavGraph() {
                 HelpScreen()
             }
             // Tela de Detalhes
-//            composable("details/{foodName}") {
-//                    backStackEntry ->
-//                val foodName = backStackEntry.arguments?.getString("foodName")
-//                val selectedFood = foodList.first { it.name == foodName }
-//                DetailsScreen(selectedFood)
-//            }
+            composable("details/{itemName}") {
+                    backStackEntry ->
+                val itemName = backStackEntry.arguments?.getString("itemName")
+                val selectedItem = mockItens.first { it.name == itemName }
+                DetailsScreen(selectedItem)
+            }
         }
     }
 }
