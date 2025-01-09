@@ -103,7 +103,9 @@ fun NavGraph() {
                     },
                     onLogoutClick = { context: Context ->
                         logout(context)
-                    }
+                    },
+                    navController = navController,
+                    navigateTo = ::navigateTo
                 )
             }
 
@@ -144,10 +146,7 @@ fun NavGraph() {
             composable(BottomBarScreen.Settings.route) {
                 SettingsScreen()
             }
-            // Tela de Ajuda
-            composable(BottomBarScreen.Help.route) {
-                HelpScreen()
-            }
+
             // Tela de Detalhes
             composable("details/{itemName}") {
                     backStackEntry ->
