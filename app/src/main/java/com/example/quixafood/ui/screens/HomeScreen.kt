@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.example.quixafood.models.mockItens
 import androidx.compose.foundation.lazy.items
+import androidx.navigation.NavController
 import com.example.quixafood.ui.components.ItemCardView
 import com.example.quixafood.ui.components.TopAppBarWithMenu
 
@@ -20,7 +21,9 @@ fun HomeScreen(
     onFavoritesClick: () -> Unit,
     onHelpClick: () -> Unit,
     onLogoutClick: (Context) -> Unit,
-    onSettingsClick: () -> Unit  // Adicione o parâmetro aqui
+    onSettingsClick: () -> Unit,
+    navController: NavController,
+    navigateTo: (NavController, String, Boolean, Boolean, Boolean) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -38,6 +41,9 @@ fun HomeScreen(
                 items(mockItens) { item ->
                     ItemCardView(itens = item, onFavoriteClick = {
                         item.isFavorite.value = !item.isFavorite.value
+                    },
+                    onDetailClick = {
+                        navigateTo(navController, "details/${item.name}", true, true, false)
                     })
                 }
             }

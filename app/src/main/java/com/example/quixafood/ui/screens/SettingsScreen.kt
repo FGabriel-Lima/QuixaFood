@@ -1,3 +1,5 @@
+package com.example.quixafood.ui.screens
+
 import android.content.Context
 import android.content.SharedPreferences
 import android.widget.Toast
@@ -11,9 +13,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BrightnessHigh
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -45,6 +48,7 @@ fun getThemePreference(context: Context): Boolean {
     return sharedPreferences.getBoolean("isDarkMode", false) // Padrão é false (modo claro)
 }
 
+@ExperimentalMaterial3Api
 @Composable
 fun SettingsScreen(
     onThemeToggle: () -> Unit,

@@ -1,6 +1,5 @@
 package com.example.quixafood.navigation
 
-import SettingsScreen
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.padding
@@ -27,8 +26,8 @@ import com.example.quixafood.ui.screens.FavoritesScreen
 import com.example.quixafood.ui.screens.HelpScreen
 import com.example.quixafood.ui.screens.HomeScreen
 import com.example.quixafood.ui.screens.SearchScreen
+import com.example.quixafood.ui.screens.SettingsScreen
 import com.example.quixafood.ui.theme.QuixaFoodTheme
-
 
 sealed class BottomBarScreen(val route: String, val icon: @Composable () -> Unit, val label: String) {
     object Home : BottomBarScreen(
@@ -83,7 +82,6 @@ fun NavGraph() {
     val isDarkTheme = remember { mutableStateOf(false) }
     val isNotificationsEnabled = remember { mutableStateOf(false) }
     QuixaFoodTheme(darkTheme = isDarkTheme.value) {
-
         Scaffold(
             bottomBar = {
                 BottomNavigationBar(navController = navController)
@@ -119,7 +117,9 @@ fun NavGraph() {
                         },
                         onLogoutClick = { context: Context ->
                             logout(context)
-                        }
+                        },
+                        navController = navController,
+                        navigateTo = ::navigateTo
                     )
                 }
 
@@ -169,14 +169,12 @@ fun NavGraph() {
                     SettingsScreen(
 
                         onThemeToggle = { isDarkTheme.value = !isDarkTheme.value },
-                        onNotificationsToggle={ isNotificationsEnabled.value = !isNotificationsEnabled.value}
+                        onNotificationsToggle = {
+                            isNotificationsEnabled.value = !isNotificationsEnabled.value
+                        }
                     )
                 }
 
-//            // Tela de Ajuda
-//            composable(BottomBarScreen.Help.route) {
-//                HelpScreen()
-//            }
                 // Tela de Detalhes
                 composable("details/{itemName}") { backStackEntry ->
                     val itemName = backStackEntry.arguments?.getString("itemName")
@@ -186,5 +184,5 @@ fun NavGraph() {
             }
         }
     }
-
 }
+
