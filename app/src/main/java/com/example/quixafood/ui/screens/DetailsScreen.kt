@@ -59,7 +59,7 @@ fun DetailsScreen(item: Itens) {
                     painter = painterResource(id = item.imageRes),
                     contentDescription = "Imagem de ${item.name}",
                     modifier = Modifier
-                        .size(200.dp)
+                        .size(400.dp)
 //                        .clip(CircleShape)
                 )
             }
@@ -114,7 +114,7 @@ fun DetailsScreen(item: Itens) {
 //                        style = MaterialTheme.typography.bodyMedium,
 //                        lineHeight = 20.sp
 //                    )
-                    Text("aaaaaaaaaaaaaaaaaa")
+                    Text("Rico em nutrientes, vesão especial sem Cebolas")
                 }
             }
         }
