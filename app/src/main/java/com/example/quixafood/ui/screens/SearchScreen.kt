@@ -1,5 +1,6 @@
 package com.example.quixafood.ui.screens
 
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -22,19 +23,48 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.quixafood.models.Itens
 import com.example.quixafood.models.mockItens
+import com.example.quixafood.ui.components.PacManProgressBar
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
+@SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(navController: NavController) {
     var searchQuery by remember { mutableStateOf("") }
-    val filteredItems = mockItens.filter { it.name.contains(searchQuery, ignoreCase = true) }
+    var isLoading by remember { mutableStateOf(false) } // Controla o estado de carregamento
+    var progress by remember { mutableStateOf(0f) } // Progresso da barra
+    val filteredItems by derivedStateOf {
+        mockItens.filter { it.name.contains(searchQuery, ignoreCase = true) }
+    }
+    val coroutineScope = rememberCoroutineScope()
+    var searchJob by remember { mutableStateOf<Job?>(null) } // Gerencia a coroutine ativa
 
     Column(modifier = Modifier.padding(16.dp)) {
 
         // Campo de busca
         OutlinedTextField(
             value = searchQuery,
-            onValueChange = { searchQuery = it },
+            onValueChange = { query ->
+                searchQuery = query
+                isLoading = true
+                progress = 0f
+
+                // Cancela qualquer busca em andamento
+                searchJob?.cancel()
+                searchJob = coroutineScope.launch {
+                    val totalDuration = 4000L // Duração de 4 segundos
+                    val stepDuration = 50L // Atualização a cada 50ms
+                    val steps = totalDuration / stepDuration
+
+                    repeat(steps.toInt()) {
+                        delay(stepDuration)
+                        progress = (progress + 1f / steps).coerceIn(0f, 1f) // Limita entre 0 e 1
+                    }
+                    isLoading = false // Finaliza o carregamento
+                }
+            },
             label = { Text("Buscar", fontWeight = FontWeight.Bold) },
             leadingIcon = {
                 Icon(
@@ -58,15 +88,23 @@ fun SearchScreen(navController: NavController) {
             )
         )
 
+        // Barra de carregamento
+        if (isLoading) {
+            Spacer(modifier = Modifier.height(16.dp))
+            PacManProgressBar(progress = progress)
+        }
+
         // Exibe mensagem quando não encontrar nenhum item
-        if (filteredItems.isEmpty()) {
+        if (!isLoading && filteredItems.isEmpty()) {
             Text(
                 "Nenhum item encontrado.",
                 modifier = Modifier.padding(top = 8.dp),
                 color = Color.Gray
             )
-        } else {
-            // Lista de itens filtrados
+        }
+
+        // Lista de itens filtrados
+        if (!isLoading) {
             LazyColumn {
                 items(filteredItems) { item ->
                     SearchItemCard(item = item)
