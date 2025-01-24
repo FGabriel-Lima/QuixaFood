@@ -1,6 +1,9 @@
 package com.example.quixafood.ui.components
 
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -18,6 +21,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ListItemDefaults.contentColor
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -57,18 +64,31 @@ fun ItemCardView(itens: Itens, onFavoriteClick: () -> Unit = {}, onDetailClick: 
             Spacer(modifier = Modifier.height(4.dp))
             Text(text = "R$ ${itens.price}")
             Row {
-                Button(onClick = onDetailClick,
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
-                    )
+                Button(
+                    onClick = onDetailClick,
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                )
                 {
                     Text(text = "Ver Detalhes")
                 }
                 Spacer(modifier = Modifier.weight(1f))
-                Button(onClick = onFavoriteClick,
+                Button(
+                    onClick = onFavoriteClick,
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
-                    ) {
+                ) {
                     Text(text = if (itens.isFavorite.value) "Remover dos Favoritos" else "Adicionar aos Favoritos")
                 }
+            }
+            AnimatedVisibility(
+                visible = itens.isFavorite.value,
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
+                Text(
+                    text = "Adicionado aos Favoritos",
+                    color = Color.Black,
+                    modifier = Modifier.padding(top = 16.dp)
+                )
             }
         }
     }
