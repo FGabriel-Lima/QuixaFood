@@ -2,6 +2,10 @@ package com.example.quixafood.navigation
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -15,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -28,6 +33,8 @@ import com.example.quixafood.ui.screens.HomeScreen
 import com.example.quixafood.ui.screens.SearchScreen
 import com.example.quixafood.ui.screens.SettingsScreen
 import com.example.quixafood.ui.theme.QuixaFoodTheme
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import com.google.accompanist.navigation.animation.AnimatedNavHost
 
 sealed class BottomBarScreen(val route: String, val icon: @Composable () -> Unit, val label: String) {
     object Home : BottomBarScreen(
@@ -64,21 +71,25 @@ private fun navigateTo(
     launchSingleTop: Boolean = true,
     restoreState: Boolean = true
 ) {
+    val startDestinationId = navController.graph.startDestinationId
     navController.navigate(route) {
-        popUpTo(navController.graph.startDestinationId) { this.inclusive = inclusive }
+        popUpTo(startDestinationId) { this.inclusive = inclusive }
         this.launchSingleTop = launchSingleTop
         this.restoreState = restoreState
     }
 }
 
+
 private fun logout(context: Context) {
     Toast.makeText(context, "Logout realizado com sucesso!", Toast.LENGTH_SHORT).show()
 }
 
+@ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @Composable
 fun NavGraph() {
-    val navController = rememberNavController()
+    val context = LocalContext.current
+    val navController = rememberAnimatedNavController()
     val isDarkTheme = remember { mutableStateOf(false) }
     val isNotificationsEnabled = remember { mutableStateOf(false) }
     QuixaFoodTheme(darkTheme = isDarkTheme.value) {
@@ -87,13 +98,13 @@ fun NavGraph() {
                 BottomNavigationBar(navController = navController)
             }
         ) { innerPadding ->
-            NavHost(
+            AnimatedNavHost(
                 navController = navController,
                 startDestination = BottomBarScreen.Home.route,
-                modifier = Modifier.padding(innerPadding)
+                modifier = Modifier.padding(innerPadding),
             ) {
                 // Tela Home
-                composable(BottomBarScreen.Home.route) {
+                composable(route = BottomBarScreen.Home.route, enterTransition = { fadeIn() }, exitTransition = { fadeOut() }) {
                     HomeScreen(
                         onHomeClick = {
                             navigateTo(navController, BottomBarScreen.Home.route)
@@ -124,7 +135,7 @@ fun NavGraph() {
                 }
 
                 // Tela de Favoritos
-                composable(BottomBarScreen.Favorites.route) {
+                composable(route = BottomBarScreen.Favorites.route, enterTransition = { fadeIn() }, exitTransition = { fadeOut() }) {
                     FavoritesScreen(
                         onHomeClick = {
                             navigateTo(navController, BottomBarScreen.Home.route)
@@ -155,17 +166,17 @@ fun NavGraph() {
                 }
 
                 // Tela de Ajuda
-                composable(BottomBarScreen.Help.route) {
+                composable(route = BottomBarScreen.Help.route, enterTransition = { fadeIn() }, exitTransition = { fadeOut() }) {
                     HelpScreen(navController = navController)
                 }
 
                 // Tela de Busca
-                composable(BottomBarScreen.Search.route) {
+                composable(route = BottomBarScreen.Search.route, enterTransition = { fadeIn() }, exitTransition = { fadeOut() }) {
                     SearchScreen(navController = navController)
                 }
 
                 // Tela de Configurações
-                composable(BottomBarScreen.Settings.route) {
+                composable(route = BottomBarScreen.Settings.route, enterTransition = { fadeIn() }, exitTransition = { fadeOut() }) {
                     SettingsScreen(
 
                         onThemeToggle = { isDarkTheme.value = !isDarkTheme.value },
@@ -176,10 +187,16 @@ fun NavGraph() {
                 }
 
                 // Tela de Detalhes
-                composable("details/{itemName}") { backStackEntry ->
+                composable(route = "details/{itemName}", enterTransition = { fadeIn() }, exitTransition = { fadeOut() }) { backStackEntry ->
                     val itemName = backStackEntry.arguments?.getString("itemName")
-                    val selectedItem = mockItens.first { it.name == itemName }
-                    DetailsScreen(selectedItem)
+                    val selectedItem = mockItens.firstOrNull { it.name == itemName }
+                    selectedItem?.let {
+                        DetailsScreen(it)
+                    } ?: run {
+                        // Exiba uma mensagem de erro ou uma tela de fallback
+                        Toast.makeText(context, "Item não encontrado!", Toast.LENGTH_SHORT).show()
+                    }
+
                 }
             }
         }
