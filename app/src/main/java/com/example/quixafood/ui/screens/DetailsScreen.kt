@@ -3,7 +3,6 @@ package com.example.quixafood.ui.screens
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import android.Manifest
-import android.app.Activity
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.app.TimePickerDialog
@@ -14,7 +13,6 @@ import android.icu.util.Calendar
 import android.os.Build
 import android.provider.Settings
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,8 +22,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -47,7 +46,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.quixafood.models.Itens
 import com.example.quixafood.nofications.AlarmReceiver
@@ -61,8 +59,7 @@ private fun setAlarm(context: Context, hour: Int, minute: Int) {
     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
         ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS)
         != PackageManager.PERMISSION_GRANTED) {
-        requestNotificationPermission(context)
-        Toast.makeText(context, "Permissão necessária para notificações.", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, "Permissão necessária para notificações. Ative nas configurações do aplicativo.", Toast.LENGTH_SHORT).show()
         return
     }
     val calendar = Calendar.getInstance().apply {
@@ -80,17 +77,6 @@ private fun setAlarm(context: Context, hour: Int, minute: Int) {
     )
     alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
     Toast.makeText(context, "Alarme configurado para ${hour}:${minute}", Toast.LENGTH_SHORT).show()
-}
-
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
-private fun requestNotificationPermission(context: Context) {
-    if (context is Activity) {
-        ActivityCompat.requestPermissions(
-            context,
-            arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-            1001
-        )
-    }
 }
 
 private fun canScheduleExactAlarms(context: Context): Boolean {
@@ -169,6 +155,7 @@ fun DetailsScreen(item: Itens) {
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(16.dp)
+                .verticalScroll(rememberScrollState())
         ) {
             // Imagem destacada
             Box(
@@ -245,17 +232,14 @@ fun DetailsScreen(item: Itens) {
             ) {
                 Column(
                     modifier = Modifier.fillMaxWidth()
-                        .wrapContentSize(Alignment.Center)
                 ){
                     Text(
                         text = "Toque para agendar pedido",
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
                     )
                     Button(
                         onClick = { showTimePicker = true },
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Red))
                     {
                         Text("Definir Horário")
@@ -264,12 +248,10 @@ fun DetailsScreen(item: Itens) {
                     if(enabledConfirmation) {
                         Text(
                             text = "Pedido definido para $hour:$minute",
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
                         )
                     } else {
                         Text(
                             text = "Horário não definido",
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
                         )
                     }
                     TimePickerDialogHandler(
@@ -294,7 +276,6 @@ fun DetailsScreen(item: Itens) {
                             enabledConfirmation = false
                         },
                         enabled = enabledConfirmation,
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
                     ) {
                         Text(
