@@ -1,5 +1,7 @@
 package com.example.quixafood.ui.screens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
 import android.Manifest
 import android.app.Activity
 import android.app.AlarmManager
@@ -34,9 +36,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -143,6 +145,8 @@ fun TimePickerDialogHandler(
 @ExperimentalMaterial3Api
 @Composable
 fun DetailsScreen(item: Itens) {
+    var showDetails by remember { mutableStateOf(false) }
+
     var hour by remember { mutableStateOf(0) }
     var minute by remember { mutableStateOf(0) }
     var showTimePicker by remember { mutableStateOf(false) }
@@ -178,53 +182,59 @@ fun DetailsScreen(item: Itens) {
                     contentDescription = "Imagem de ${item.name}",
                     modifier = Modifier
                         .size(400.dp)
-//                        .clip(CircleShape)
                 )
             }
             Spacer(modifier = Modifier.height(16.dp))
-            // Informações Gerais
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        text = "Informações Gerais" ,
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Tipo: ${item.description}",
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                    Text(
-                        text = "Preço: ${item.price}",
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                }
+            // Botão para mostrar/ocultar detalhes
+            Button(onClick = { showDetails = !showDetails }, colors = ButtonDefaults.buttonColors(containerColor = Color.Red)) {
+                Text(text = if (showDetails) "Esconder Detalhes" else "Ver Detalhes")
             }
             Spacer(modifier = Modifier.height(16.dp))
-            // Características
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+            // Informações Gerais com animação
+            AnimatedVisibility(
+                visible = showDetails,
+                enter = fadeIn()
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        text = "Características",
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-//                    Text(
-//                        text = item.characteristics,
-//                        style = MaterialTheme.typography.bodyMedium,
-//                        lineHeight = 20.sp
-//                    )
-                    Text("Rico em nutrientes, vesão especial sem Cebolas")
+                Column {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                text = "Informações Gerais",
+                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "Tipo: ${item.description}",
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                            Text(
+                                text = "Preço: ${item.price}",
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    // Características
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                text = "Características",
+                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text("Rico em nutrientes, versão especial sem Cebolas")
+                        }
+                    }
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
