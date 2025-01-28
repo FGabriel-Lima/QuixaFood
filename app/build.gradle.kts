@@ -50,6 +50,8 @@ android {
 }
 
 dependencies {
+
+    implementation("com.google.accompanist:accompanist-navigation-animation:0.20.0")
     implementation("io.coil-kt:coil-compose:2.0.0")
     implementation (libs.androidx.navigation.compose)
 

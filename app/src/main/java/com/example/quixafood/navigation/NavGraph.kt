@@ -2,6 +2,7 @@ package com.example.quixafood.navigation
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -77,7 +78,7 @@ private fun logout(context: Context) {
 
 @ExperimentalMaterial3Api
 @Composable
-fun NavGraph() {
+fun NavGraph(useAnimation: Boolean = true) {
     val navController = rememberNavController()
     val isDarkTheme = remember { mutableStateOf(false) }
     val isNotificationsEnabled = remember { mutableStateOf(false) }
@@ -185,4 +186,3 @@ fun NavGraph() {
         }
     }
 }
-

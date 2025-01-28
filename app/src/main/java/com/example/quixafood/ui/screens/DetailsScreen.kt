@@ -13,6 +13,7 @@ import android.icu.util.Calendar
 import android.os.Build
 import android.provider.Settings
 import android.widget.Toast
+import androidx.compose.animation.EnterTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -130,7 +131,7 @@ fun TimePickerDialogHandler(
 
 @ExperimentalMaterial3Api
 @Composable
-fun DetailsScreen(item: Itens) {
+fun DetailsScreen(item: Itens, useAnimation: Boolean = true) {
     var showDetails by remember { mutableStateOf(false) }
 
     var hour by remember { mutableStateOf(0) }
@@ -180,7 +181,7 @@ fun DetailsScreen(item: Itens) {
             // Informações Gerais com animação
             AnimatedVisibility(
                 visible = showDetails,
-                enter = fadeIn()
+                enter = if(useAnimation) fadeIn() else EnterTransition.None
             ) {
                 Column {
                     Card(
