@@ -2,6 +2,8 @@ package com.example.quixafood.ui.components
 
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
@@ -37,7 +39,7 @@ import com.example.quixafood.models.Itens
 
 @ExperimentalMaterial3Api
 @Composable
-fun ItemCardView(itens: Itens, onFavoriteClick: () -> Unit = {}, onDetailClick: () -> Unit = {}) {
+fun ItemCardView(itens: Itens, onFavoriteClick: () -> Unit = {}, useAnimation: Boolean = true, onDetailClick: () -> Unit = {}) {
     Card(
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(4.dp),
@@ -81,8 +83,8 @@ fun ItemCardView(itens: Itens, onFavoriteClick: () -> Unit = {}, onDetailClick: 
             }
             AnimatedVisibility(
                 visible = itens.isFavorite.value,
-                enter = fadeIn(),
-                exit = fadeOut()
+                enter = if(useAnimation) fadeIn() else EnterTransition.None,
+                exit = if (useAnimation) fadeOut() else ExitTransition.None
             ) {
                 Text(
                     text = "Adicionado aos Favoritos",
