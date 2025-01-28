@@ -184,7 +184,7 @@ fun SettingsScreen(
         Button(
             onClick = { limparFavoritos() },
             modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFE605D))
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFE605D))// para deixar esbranquiçado
 
         ) {
             Text("Limpar Favoritos")
@@ -206,7 +206,7 @@ fun SettingsScreen(
                     onNotificationsToggle() // Chama a função para alternar as notificações
                 }
             },
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFE605D))
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFE605D))//para deixar esbranquiçado
             ,modifier = Modifier
                 .fillMaxWidth()
 

@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.TextFieldValue
@@ -114,9 +115,9 @@ fun HelpScreen(navController: NavHostController) {
             if (showMessageConfirmation) {
                 Text(
                     text = "Mensagem enviada com sucesso!",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = secondaryColor, // Amarelo
-                    modifier = Modifier.padding(top = 8.dp)
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Color.Green, // Verde para confirmar envio
+                    modifier = Modifier.padding(top = 16.dp)
                 )
             }
         }

@@ -123,9 +123,7 @@ fun SearchItemCard(item: Itens) {
             .fillMaxWidth()
             .padding(bottom = 12.dp),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.White
-        ),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Row(
@@ -154,15 +152,14 @@ fun SearchItemCard(item: Itens) {
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = item.description,
-                    fontSize = 14.sp,
+                    fontSize = 18.sp,
                     color = Color.Gray
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "R$ ${item.price}",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Red
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Button(

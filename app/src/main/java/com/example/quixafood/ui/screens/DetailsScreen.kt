@@ -187,7 +187,7 @@ fun DetailsScreen(item: Itens, useAnimation: Boolean = true) {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
@@ -200,6 +200,7 @@ fun DetailsScreen(item: Itens, useAnimation: Boolean = true) {
                                 text = "Tipo: ${item.description}",
                                 style = MaterialTheme.typography.bodyLarge
                             )
+                            Spacer(modifier = Modifier.height(8.dp))
                             Text(
                                 text = "Preço: ${item.price}",
                                 style = MaterialTheme.typography.bodyLarge
@@ -217,7 +218,7 @@ fun DetailsScreen(item: Itens, useAnimation: Boolean = true) {
                             Text(
                                 text = "Características",
                                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                                color = MaterialTheme.colorScheme.primary
+                                color = MaterialTheme.colorScheme.onPrimary
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text("Rico em nutrientes, versão especial sem Cebolas")
