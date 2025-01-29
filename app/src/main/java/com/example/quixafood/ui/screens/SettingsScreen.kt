@@ -12,6 +12,7 @@ import android.provider.Settings
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,9 +26,12 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -92,6 +96,29 @@ private fun checkNotifications(context: Context): Boolean {
     return true
 }
 
+val LightColorScheme = lightColorScheme(
+    primary = Color(0xFF6200EE),
+    secondary = Color(0xFF03DAC6)
+)
+
+val BlueCalmColorScheme = lightColorScheme(
+    primary = Color(0xFF2196F3),
+    secondary = Color(0xFF80CBC4),
+    tertiary = Color(0xFF81D4FA)
+)
+
+val GreenFreshColorScheme = lightColorScheme(
+    primary = Color(0xFF4CAF50),
+    secondary = Color(0xFF388E3C),
+    tertiary = Color(0xFF81C784)
+)
+
+val WarmSunsetColorScheme = lightColorScheme(
+    primary = Color(0xFFFB8C00),
+    secondary = Color(0xFFEF5350),
+    tertiary = Color(0xFFFBC02D)
+)
+
 @ExperimentalMaterial3Api
 @Composable
 fun SettingsScreen(
@@ -100,6 +127,16 @@ fun SettingsScreen(
 ) {
     val context = LocalContext.current
     val areNotificationsEnabled = remember { mutableStateOf(checkNotifications(context)) }
+
+    var currentTheme by remember { mutableStateOf(0) } // 0 = Light, 1 = BlueCalm, 2 = GreenFresh, 3 = WarmSunset
+
+    // Aplica o tema de acordo com o valor do estado
+    val colorScheme = when (currentTheme) {
+        1 -> BlueCalmColorScheme
+        2 -> GreenFreshColorScheme
+        3 -> WarmSunsetColorScheme
+        else -> LightColorScheme
+    }
 
     // Recupera o valor do tema a partir do SharedPreferences
     val isDarkMode = remember { mutableStateOf(getThemePreference(context)) }
@@ -179,6 +216,26 @@ fun SettingsScreen(
             )
         }
 
+        // Animações
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
+        ) {
+            Text(
+                text = "Animações",
+                modifier = Modifier.weight(1f)
+            )
+            Switch(
+                checked = false, // ou true, dependendo de como você quer que o Switch inicie
+                onCheckedChange = { /* Não faz nada aqui */ }
+            )
+
+
+
+        }
+
         // Botão Limpar Favoritos
         Spacer(modifier = Modifier.height(32.dp))
         Button(
@@ -212,6 +269,23 @@ fun SettingsScreen(
 
         ) {
             Text("Redefinir Preferências")
+        }
+
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text("Tema Atual: ${when (currentTheme) {
+                1 -> "Blue Calm"
+                2 -> "Green Fresh"
+                3 -> "Warm Sunset"
+                else -> "Claro"
+            }}")
+
+            // Botões para alternar entre os temas
+            Button(onClick = { currentTheme = (currentTheme + 1) % 4 }) {
+                Text("Trocar Tema")
+            }
         }
     }
 }

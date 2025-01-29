@@ -24,10 +24,28 @@ private val LightColorScheme = lightColorScheme(
     tertiary = Pink40,
 
 )
+private val BlueCalmColorScheme = lightColorScheme(
+    primary = Blue500,
+    secondary = Teal200,
+    tertiary = LightBlue200,
+)
+
+private val GreenFreshColorScheme = lightColorScheme(
+    primary = Green500,
+    secondary = Lime700,
+    tertiary = LightGreen300,
+)
+
+private val WarmSunsetColorScheme = lightColorScheme(
+    primary = Orange400,
+    secondary = Red200,
+    tertiary = Yellow700,
+)
 
 @Composable
 fun QuixaFoodTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
+
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
