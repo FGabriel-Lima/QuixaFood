@@ -1,7 +1,9 @@
 package com.example.quixafood.navigation
 
 import android.content.Context
+import android.os.Build
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -35,6 +37,7 @@ import com.example.quixafood.ui.screens.SearchScreen
 import com.example.quixafood.ui.screens.SettingsScreen
 import com.example.quixafood.ui.theme.QuixaFoodTheme
 import com.example.quixafood.viewmodel.AuthViewModel
+import java.time.LocalTime
 
 sealed class BottomBarScreen(val route: String, val icon: @Composable () -> Unit, val label: String) {
     object Home : BottomBarScreen(
@@ -78,11 +81,18 @@ private fun navigateTo(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
+fun isNightMode(): Boolean{
+    val now = LocalTime.now()
+    return now.hour in 19..23 || now.hour in 0..5
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
 @ExperimentalMaterial3Api
 @Composable
 fun NavGraph(context: Context, useAnimation: Boolean = true) {
     val navController = rememberNavController()
-    val isDarkTheme = remember { mutableStateOf(false) }
+    val isDarkTheme = remember { mutableStateOf(isNightMode()) }
     val isNotificationsEnabled = remember { mutableStateOf(false) }
     val authViewModel = AuthViewModel(AuthRepository())
 
