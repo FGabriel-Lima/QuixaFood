@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "685071598801",
+    "project_id": "quixafood-5baef",
+    "storage_bucket": "quixafood-5baef.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:685071598801:android:80425090f71ed40f0531f0",
+        "android_client_info": {
+          "package_name": "com.example.quixafood"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "685071598801-p5tjh1s2fc4odihqdromjc1njuescdqi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.quixafood",
+            "certificate_hash": "e1615a98e9ddb5d4d33ffff3b0f9cd190e849d04"
+          }
+        },
+        {
+          "client_id": "685071598801-8ieo1j2sdfrevqn39s27hkj32uc9r7t7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA1knAUBp5KgzlkOUqjM3_gT4NQcXi-jYA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "685071598801-8ieo1j2sdfrevqn39s27hkj32uc9r7t7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

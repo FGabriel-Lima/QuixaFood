@@ -2,7 +2,6 @@ package com.example.quixafood.navigation
 
 import android.content.Context
 import android.widget.Toast
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -13,22 +12,29 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.quixafood.data.AuthRepository
 import com.example.quixafood.models.mockItens
 import com.example.quixafood.ui.components.BottomNavigationBar
 import com.example.quixafood.ui.screens.DetailsScreen
 import com.example.quixafood.ui.screens.FavoritesScreen
 import com.example.quixafood.ui.screens.HelpScreen
 import com.example.quixafood.ui.screens.HomeScreen
+import com.example.quixafood.ui.screens.LoginScreen
+import com.example.quixafood.ui.screens.RegisterScreen
+import com.example.quixafood.ui.screens.ResetPasswordScreen
 import com.example.quixafood.ui.screens.SearchScreen
 import com.example.quixafood.ui.screens.SettingsScreen
 import com.example.quixafood.ui.theme.QuixaFoodTheme
+import com.example.quixafood.viewmodel.AuthViewModel
 
 sealed class BottomBarScreen(val route: String, val icon: @Composable () -> Unit, val label: String) {
     object Home : BottomBarScreen(
@@ -72,27 +78,49 @@ private fun navigateTo(
     }
 }
 
-private fun logout(context: Context) {
-    Toast.makeText(context, "Logout realizado com sucesso!", Toast.LENGTH_SHORT).show()
-}
-
 @ExperimentalMaterial3Api
 @Composable
-fun NavGraph(useAnimation: Boolean = true) {
+fun NavGraph(context: Context, useAnimation: Boolean = true) {
     val navController = rememberNavController()
     val isDarkTheme = remember { mutableStateOf(false) }
     val isNotificationsEnabled = remember { mutableStateOf(false) }
+    val authViewModel = AuthViewModel(AuthRepository())
+
+    val currentBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = currentBackStackEntry?.destination?.route
+
+    val noBottomBarScreens = listOf("login", "register", "resetPassword")
+
     QuixaFoodTheme(darkTheme = isDarkTheme.value) {
         Scaffold(
-            bottomBar = {
-                BottomNavigationBar(navController = navController)
+                bottomBar = {
+                    if (currentDestination !in noBottomBarScreens) {
+                        BottomNavigationBar(navController = navController)
+                    }
             }
         ) { innerPadding ->
             NavHost(
                 navController = navController,
-                startDestination = BottomBarScreen.Home.route,
+                startDestination =
+                if(authViewModel.isuserlogged()) {
+                    BottomBarScreen.Home.route
+                } else {
+                    "login"
+                },
                 modifier = Modifier.padding(innerPadding)
             ) {
+                composable("login") {
+                    LoginScreen(navController, authViewModel, context)
+                }
+
+                composable("register") {
+                    RegisterScreen(navController, authViewModel, context)
+                }
+
+                composable("resetPassword") {
+                    ResetPasswordScreen(navController, authViewModel, context)
+                }
+
                 // Tela Home
                 composable(BottomBarScreen.Home.route) {
                     HomeScreen(
@@ -116,8 +144,9 @@ fun NavGraph(useAnimation: Boolean = true) {
                                 restoreState = false
                             )
                         },
-                        onLogoutClick = { context: Context ->
-                            logout(context)
+                        onLogoutClick = {
+                            authViewModel.logout()
+                            navigateTo(navController, "login", restoreState = false)
                         },
                         navController = navController,
                         navigateTo = ::navigateTo
@@ -147,8 +176,9 @@ fun NavGraph(useAnimation: Boolean = true) {
                                 restoreState = false
                             )
                         },
-                        onLogoutClick = { context: Context ->
-                            logout(context)
+                        onLogoutClick = {
+                            authViewModel.logout()
+                            navigateTo(navController, "login", restoreState = false)
                         },
                         navController,
                         ::navigateTo
@@ -168,7 +198,6 @@ fun NavGraph(useAnimation: Boolean = true) {
                 // Tela de Configurações
                 composable(BottomBarScreen.Settings.route) {
                     SettingsScreen(
-
                         onThemeToggle = { isDarkTheme.value = !isDarkTheme.value },
                         onNotificationsToggle = {
                             isNotificationsEnabled.value = !isNotificationsEnabled.value

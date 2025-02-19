@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("com.google.gms.google-services")
+    id("org.jetbrains.compose")
 }
 
 android {
@@ -40,7 +42,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.3"
     }
     packaging {
         resources {
@@ -50,6 +52,19 @@ android {
 }
 
 dependencies {
+
+    // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-messaging-ktx:24.1.0")
+
+    implementation("com.google.firebase:firebase-firestore-ktx")
+
+    // Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+
+    implementation(platform("androidx.compose:compose-bom:2023.09.01"))
     implementation("com.google.accompanist:accompanist-navigation-animation:0.20.0")
     implementation("io.coil-kt:coil-compose:2.0.0")
     implementation (libs.androidx.navigation.compose)
