@@ -1,4 +1,4 @@
-package com.example.quixafood.ui.screens
+package com.example.quixafood.ui.view.screens
 
 import android.content.Context
 import androidx.compose.foundation.layout.Box
@@ -14,9 +14,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import com.example.quixafood.models.mockItens
-import com.example.quixafood.ui.components.ItemCardView
-import com.example.quixafood.ui.components.TopAppBarWithMenu
+import com.example.quixafood.model.itemmodel.mockItens
+import com.example.quixafood.ui.view.components.ItemCardView
+import com.example.quixafood.ui.view.components.TopAppBarWithMenu
 
 @ExperimentalMaterial3Api
 @Composable

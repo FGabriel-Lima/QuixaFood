@@ -1,4 +1,4 @@
-package com.example.quixafood.ui.screens
+package com.example.quixafood.ui.view.screens
 
 import android.Manifest
 import android.app.Activity
@@ -12,7 +12,6 @@ import android.provider.Settings
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -41,7 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.quixafood.models.mockItens
+import com.example.quixafood.model.itemmodel.mockItens
 
 // Função para salvar a preferência do tema nas SharedPreferences
 fun saveThemePreference(context: Context, isDarkMode: Boolean) {
@@ -58,7 +57,8 @@ fun getThemePreference(context: Context): Boolean {
 
 private fun changeNotification(context: Context) {
     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-        !checkNotifications(context)) {
+        !checkNotifications(context)
+    ) {
         requestNotificationPermission(context)
         Toast.makeText(context, "Permissão necessária para notificações.", Toast.LENGTH_SHORT).show()
         return

@@ -1,4 +1,4 @@
-package com.example.quixafood.ui.components
+package com.example.quixafood.ui.view.components
 
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable

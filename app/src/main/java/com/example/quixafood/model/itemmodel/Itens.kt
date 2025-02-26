@@ -1,4 +1,4 @@
-package com.example.quixafood.models
+package com.example.quixafood.model.itemmodel
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf

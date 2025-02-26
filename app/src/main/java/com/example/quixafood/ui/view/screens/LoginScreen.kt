@@ -1,4 +1,4 @@
-package com.example.quixafood.ui.screens
+package com.example.quixafood.ui.view.screens
 
 import android.content.Context
 import androidx.compose.foundation.Image
@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.quixafood.R
@@ -32,13 +33,14 @@ import com.example.quixafood.viewmodel.AuthViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun ResetPasswordScreen(
+fun LoginScreen(
     navController: NavController,
     authViewModel: AuthViewModel,
     context: Context
 ) {
     var email by remember { mutableStateOf("") }
-    var message by remember { mutableStateOf<String?>(null) }
+    var password by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
     val coroutineScope = rememberCoroutineScope()
 
     Column(
@@ -57,35 +59,65 @@ fun ResetPasswordScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(text = "Recuperar Senha", style = MaterialTheme.typography.titleLarge)
+        Text(text = "Login", style = MaterialTheme.typography.titleLarge)
+
         Spacer(modifier = Modifier.height(16.dp))
+
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
             label = { Text("Email") },
             modifier = Modifier.fillMaxWidth()
         )
+
         Spacer(modifier = Modifier.height(8.dp))
-        message?.let {
-            Text(text = it, color = MaterialTheme.colorScheme.secondary)
+
+        OutlinedTextField(
+            value = password,
+            onValueChange = { password = it },
+            label = { Text("Senha") },
+            visualTransformation = PasswordVisualTransformation(),
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        errorMessage?.let {
+            Text(text = it, color = MaterialTheme.colorScheme.error)
         }
+
         Button(
             onClick = {
                 coroutineScope.launch {
-                    authViewModel.resetPassword(email) { success ->
-                        message = if (success) "Email enviado com instruções!" else "Erro ao enviar email"
+                    authViewModel.login(email, password) { success ->
+                        if (!success) {
+                            errorMessage = "Erro ao fazer login"
+                        } else {
+                            navController.navigate("home") {
+                                popUpTo("login") { inclusive = true }
+                            }
+                        }
                     }
                 }
             },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
         ) {
-            Text(text = "Recuperar Senha")
+            Text(text = "Entrar")
         }
+
         Spacer(modifier = Modifier.height(16.dp))
+
         Text(
-            text = "Voltar para Login",
-            modifier = Modifier.clickable { navController.navigate("login") }
+            text = "Esqueceu a senha?",
+            modifier = Modifier.clickable { navController.navigate("resetPassword") }
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "Não tem uma conta? Cadastre-se",
+            modifier = Modifier.clickable { navController.navigate("register") }
         )
     }
 }

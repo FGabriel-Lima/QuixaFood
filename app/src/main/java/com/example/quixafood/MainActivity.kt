@@ -7,7 +7,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 
-import com.example.quixafood.navigation.NavGraph
+import com.example.quixafood.model.navigation.NavGraph
 
 @ExperimentalMaterial3Api
 class MainActivity : ComponentActivity() {
