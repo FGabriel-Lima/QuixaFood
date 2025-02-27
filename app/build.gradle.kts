@@ -61,6 +61,9 @@ dependencies {
 
     implementation("com.google.firebase:firebase-firestore-ktx")
 
+    // Google Sign-In (Para Social Login com Google)
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
+
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 
