@@ -1,4 +1,4 @@
-package com.example.quixafood.nofications
+package com.example.quixafood.model.nofications
 
 import android.annotation.SuppressLint
 import android.app.NotificationChannel

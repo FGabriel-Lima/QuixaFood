@@ -1,4 +1,4 @@
-package com.example.quixafood.ui.screens
+package com.example.quixafood.ui.view.screens
 
 import android.annotation.SuppressLint
 import android.widget.Toast
@@ -21,9 +21,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.quixafood.models.Itens
-import com.example.quixafood.models.mockItens
-import com.example.quixafood.ui.components.PacManProgressBar
+import com.example.quixafood.model.itemmodel.Itens
+import com.example.quixafood.model.itemmodel.mockItens
+import com.example.quixafood.ui.view.components.PacManProgressBar
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

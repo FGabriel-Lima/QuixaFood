@@ -1,4 +1,4 @@
-package com.example.quixafood.ui.screens
+package com.example.quixafood.ui.view.screens
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*

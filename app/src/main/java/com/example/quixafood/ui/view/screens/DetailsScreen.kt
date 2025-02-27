@@ -1,4 +1,4 @@
-package com.example.quixafood.ui.screens
+package com.example.quixafood.ui.view.screens
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -48,8 +48,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import com.example.quixafood.models.Itens
-import com.example.quixafood.nofications.AlarmReceiver
+import com.example.quixafood.model.itemmodel.Itens
+import com.example.quixafood.model.nofications.AlarmReceiver
 
 private fun setAlarm(context: Context, hour: Int, minute: Int) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !canScheduleExactAlarms(context)) {
