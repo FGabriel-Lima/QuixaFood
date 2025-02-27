@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.quixafood.model.itemmodel.Itens
 import com.example.quixafood.model.itemmodel.mockItens
+import com.example.quixafood.ui.theme.viewmodel.AnimationViewModel
 import com.example.quixafood.ui.view.components.PacManProgressBar
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -31,7 +32,7 @@ import kotlinx.coroutines.launch
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchScreen(navController: NavController) {
+fun SearchScreen(navController: NavController, animationViewModel: AnimationViewModel) {
     var searchQuery by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) } // Controla o estado de carregamento
     var progress by remember { mutableStateOf(0f) } // Progresso da barra
@@ -41,8 +42,10 @@ fun SearchScreen(navController: NavController) {
     val coroutineScope = rememberCoroutineScope()
     var searchJob by remember { mutableStateOf<Job?>(null) } // Gerencia a coroutine ativa
 
-    Column(modifier = Modifier.padding(16.dp)) {
+    // Coleta o estado do modo de animação
+    val isAnimationMode by animationViewModel.isAnimationMode.collectAsState()
 
+    Column(modifier = Modifier.padding(16.dp)) {
         // Campo de busca
         OutlinedTextField(
             value = searchQuery,
@@ -88,8 +91,8 @@ fun SearchScreen(navController: NavController) {
             )
         )
 
-        // Barra de carregamento
-        if (isLoading) {
+        // Barra de carregamento, aparece apenas se isAnimationMode for true
+        if (isLoading && isAnimationMode) {
             Spacer(modifier = Modifier.height(16.dp))
             PacManProgressBar(progress = progress)
         }
@@ -113,6 +116,7 @@ fun SearchScreen(navController: NavController) {
         }
     }
 }
+
 
 @Composable
 fun SearchItemCard(item: Itens) {

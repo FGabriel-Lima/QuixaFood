@@ -1,7 +1,12 @@
 package com.example.quixafood.model.navigation
 
+import AnimationPreferences
+import ThemePreferences
+import com.example.quixafood.ui.theme.viewmodel.ThemeViewModel
+import com.example.quixafood.ui.theme.viewmodel.ThemeViewModelFactory
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -11,12 +16,16 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -35,33 +44,35 @@ import com.example.quixafood.ui.view.screens.ResetPasswordScreen
 import com.example.quixafood.ui.view.screens.SearchScreen
 import com.example.quixafood.ui.view.screens.SettingsScreen
 import com.example.quixafood.ui.theme.QuixaFoodTheme
+import com.example.quixafood.ui.theme.viewmodel.AnimationViewModel
+import com.example.quixafood.ui.theme.viewmodel.AnimationViewModelFactory
 import com.example.quixafood.viewmodel.AuthViewModel
 import java.time.LocalTime
 
 sealed class BottomBarScreen(val route: String, val icon: @Composable () -> Unit, val label: String) {
     object Home : BottomBarScreen(
         route = "home",
-        icon = { androidx.compose.material3.Icon(Icons.Default.Home, contentDescription = "Tela Inicial") },
+        icon = { Icon(Icons.Default.Home, contentDescription = "Tela Inicial") },
         label = "Tela Inicial"
     )
     object Favorites : BottomBarScreen(
         route = "favorites",
-        icon = { androidx.compose.material3.Icon(Icons.Default.Favorite, contentDescription = "Favoritos") },
+        icon = { Icon(Icons.Default.Favorite, contentDescription = "Favoritos") },
         label = "Favoritos"
     )
     object Help : BottomBarScreen(
         route = "help",
-        icon = { androidx.compose.material3.Icon(Icons.Default.Info, contentDescription = "Ajuda") },
+        icon = { Icon(Icons.Default.Info, contentDescription = "Ajuda") },
         label = "Ajuda"
     )
     object Search : BottomBarScreen(
         route = "search",
-        icon = { androidx.compose.material3.Icon(Icons.Default.Search, contentDescription = "Buscar") },
+        icon = { Icon(Icons.Default.Search, contentDescription = "Buscar") },
         label = "Buscar"
     )
     object Settings : BottomBarScreen( // Tela de Configurações
         route = "settings",
-        icon = { androidx.compose.material3.Icon(Icons.Default.Settings, contentDescription = "Configurações") },
+        icon = { Icon(Icons.Default.Settings, contentDescription = "Configurações") },
         label = "Configurações"
     )
 }
@@ -91,8 +102,21 @@ fun isNightMode(): Boolean{
 @Composable
 fun NavGraph(context: Context, useAnimation: Boolean = true) {
     val navController = rememberNavController()
-    val isDarkTheme = remember { mutableStateOf(isNightMode()) }
+    val themePreferences = remember { ThemePreferences(context) }
+    val themeViewModel: ThemeViewModel = viewModel(factory = ThemeViewModelFactory(themePreferences))
+
+    val isDarkTheme by themeViewModel.isDarkMode.collectAsState()
+    val isAutoDarkMode by themeViewModel.isAutoDarkMode.collectAsState()
     val isNotificationsEnabled = remember { mutableStateOf(false) }
+    val animationPreferences = remember { AnimationPreferences(context) }
+    val animationViewModel: AnimationViewModel = viewModel(factory = AnimationViewModelFactory(animationPreferences))
+
+    // 🔹 Atualiza o tema automaticamente se o modo automático estiver ativado
+    LaunchedEffect(isAutoDarkMode) {
+        Log.d("NavGraph", "Auto Dark Mode is ${isAutoDarkMode}")  // Log para verificar o valor do modo automático
+        themeViewModel.checkAndUpdateDarkMode()
+    }
+
     val authViewModel = AuthViewModel(AuthRepository())
 
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
@@ -100,7 +124,7 @@ fun NavGraph(context: Context, useAnimation: Boolean = true) {
 
     val noBottomBarScreens = listOf("login", "register", "resetPassword")
 
-    QuixaFoodTheme(darkTheme = isDarkTheme.value) {
+    QuixaFoodTheme( themeViewModel = themeViewModel) {
         Scaffold(
                 bottomBar = {
                     if (currentDestination !in noBottomBarScreens) {
@@ -201,16 +225,18 @@ fun NavGraph(context: Context, useAnimation: Boolean = true) {
 
                 // Tela de Busca
                 composable(BottomBarScreen.Search.route) {
-                    SearchScreen(navController = navController)
+
+                    SearchScreen(
+                        navController = navController,
+                        animationViewModel = animationViewModel,
+                    )
                 }
 
                 // Tela de Configurações
                 composable(BottomBarScreen.Settings.route) {
                     SettingsScreen(
-                        onThemeToggle = { isDarkTheme.value = !isDarkTheme.value },
-                        onNotificationsToggle = {
-                            isNotificationsEnabled.value = !isNotificationsEnabled.value
-                        }
+                        themeViewModel,
+                        animationViewModel,
                     )
                 }
 

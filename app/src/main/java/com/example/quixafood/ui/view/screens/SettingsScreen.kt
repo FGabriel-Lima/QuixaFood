@@ -1,14 +1,15 @@
 package com.example.quixafood.ui.view.screens
 
+import com.example.quixafood.ui.theme.viewmodel.ThemeViewModel
 import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -25,8 +26,9 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,19 +43,15 @@ import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.quixafood.model.itemmodel.mockItens
+import com.example.quixafood.ui.theme.viewmodel.AnimationViewModel
 
-// Função para salvar a preferência do tema nas SharedPreferences
-fun saveThemePreference(context: Context, isDarkMode: Boolean) {
-    val sharedPreferences: SharedPreferences = context.getSharedPreferences("user_preferences", Context.MODE_PRIVATE)
-    val editor = sharedPreferences.edit()
-    editor.putBoolean("isDarkMode", isDarkMode)
-    editor.apply()
-}
-// Função para recuperar a preferência do tema das SharedPreferences
-fun getThemePreference(context: Context): Boolean {
-    val sharedPreferences: SharedPreferences = context.getSharedPreferences("user_preferences", Context.MODE_PRIVATE)
-    return sharedPreferences.getBoolean("isDarkMode", false) // Padrão é false (modo claro)
-}
+import com.example.quixafood.ui.theme.DarkColorScheme
+import com.example.quixafood.ui.theme.LightColorScheme
+import com.example.quixafood.ui.theme.BlueCalmColorScheme
+import com.example.quixafood.ui.theme.GreenFreshColorScheme
+import com.example.quixafood.ui.theme.WarmSunsetColorScheme
+import kotlin.math.log
+
 
 private fun changeNotification(context: Context) {
     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
@@ -96,50 +94,18 @@ private fun checkNotifications(context: Context): Boolean {
     return true
 }
 
-val LightColorScheme = lightColorScheme(
-    primary = Color(0xFF6200EE),
-    secondary = Color(0xFF03DAC6)
-)
-
-val BlueCalmColorScheme = lightColorScheme(
-    primary = Color(0xFF2196F3),
-    secondary = Color(0xFF80CBC4),
-    tertiary = Color(0xFF81D4FA)
-)
-
-val GreenFreshColorScheme = lightColorScheme(
-    primary = Color(0xFF4CAF50),
-    secondary = Color(0xFF388E3C),
-    tertiary = Color(0xFF81C784)
-)
-
-val WarmSunsetColorScheme = lightColorScheme(
-    primary = Color(0xFFFB8C00),
-    secondary = Color(0xFFEF5350),
-    tertiary = Color(0xFFFBC02D)
-)
-
 @ExperimentalMaterial3Api
 @Composable
 fun SettingsScreen(
-    onThemeToggle: () -> Unit,
-    onNotificationsToggle: () -> Unit, // A função que alterna as notificações
+    themeViewModel: ThemeViewModel,
+    animationViewModel: AnimationViewModel
 ) {
     val context = LocalContext.current
     val areNotificationsEnabled = remember { mutableStateOf(checkNotifications(context)) }
 
-    var currentTheme by remember { mutableStateOf(0) } // 0 = Light, 1 = BlueCalm, 2 = GreenFresh, 3 = WarmSunset
-
-    // Aplica o tema de acordo com o valor do estado
-    val colorScheme = when (currentTheme) {
-        1 -> BlueCalmColorScheme
-        2 -> GreenFreshColorScheme
-        3 -> WarmSunsetColorScheme
-        else -> LightColorScheme
-    }
-
-    // Recupera o valor do tema a partir do SharedPreferences
-    val isDarkMode = remember { mutableStateOf(getThemePreference(context)) }
+    val isDarkMode by themeViewModel.isDarkMode.collectAsState()
+    val isAutoDarkMode by themeViewModel.isAutoDarkMode.collectAsState()
+    val isAnimationMode by animationViewModel.isAnimationMode.collectAsState()
 
     val limparFavoritos = {
         mockItens.forEach { item ->
@@ -147,7 +113,6 @@ fun SettingsScreen(
                 item.isFavorite.value = false
             }
         }
-        // Exibe mensagem de sucesso
         Toast.makeText(context, "Favoritos Limpos!", Toast.LENGTH_SHORT).show()
     }
 
@@ -158,8 +123,7 @@ fun SettingsScreen(
     ) {
         Text(
             text = "Tela de Configurações",
-            modifier = Modifier
-                .padding(16.dp), // Padding interno apenas para o texto
+            modifier = Modifier.padding(16.dp),
             fontSize = 20.sp,
             color = Color.White,
             textAlign = TextAlign.Center
@@ -173,40 +137,37 @@ fun SettingsScreen(
     ) {
         Spacer(modifier = Modifier.height(70.dp))
 
-        // Modo Escuro
+        // Modo Escuro Automático
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp)
+            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
         ) {
-            Text(
-                text = "Modo Escuro",
-                modifier = Modifier.weight(1f)
-            )
+            Text(text = "Modo Escuro Automático", modifier = Modifier.weight(1f))
             Switch(
-                checked = isDarkMode.value,
-                onCheckedChange = {
-                    isDarkMode.value = it // Atualiza o estado do modo escuro
+                checked = isAutoDarkMode,
+                onCheckedChange = { isEnabled -> themeViewModel.setAutoDarkMode(isEnabled) }
+            )
+        }
 
-                    onThemeToggle()// Chama a função para alternar o tema
-                    saveThemePreference(context, it)// Salva a preferência nas SharedPreferences
-
-                }
+        // Modo Escuro Manual
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+        ) {
+            Text(text = "Modo Escuro Manual", modifier = Modifier.weight(1f))
+            Switch(
+                checked = isDarkMode,
+                enabled = !isAutoDarkMode,
+                onCheckedChange = { themeViewModel.toggleDarkMode() }
             )
         }
 
         // Notificações
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp)
+            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
         ) {
-            Text(
-                text = "Notificações",
-                modifier = Modifier.weight(1f)
-            )
+            Text(text = "Notificações", modifier = Modifier.weight(1f))
             Switch(
                 checked = areNotificationsEnabled.value,
                 onCheckedChange = {
@@ -219,21 +180,14 @@ fun SettingsScreen(
         // Animações
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp)
+            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
         ) {
-            Text(
-                text = "Animações",
-                modifier = Modifier.weight(1f)
-            )
+            Text(text = "Animações", modifier = Modifier.weight(1f))
             Switch(
-                checked = false, // ou true, dependendo de como você quer que o Switch inicie
-                onCheckedChange = { /* Não faz nada aqui */ }
+                checked = isAnimationMode,
+                onCheckedChange = { isEnabled -> animationViewModel.saveAnimationMode(isEnabled) }
+
             )
-
-
-
         }
 
         // Botão Limpar Favoritos
@@ -241,51 +195,56 @@ fun SettingsScreen(
         Button(
             onClick = { limparFavoritos() },
             modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFE605D))// para deixar esbranquiçado
-
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFE605D))
         ) {
             Text("Limpar Favoritos")
         }
 
-        // Botão Redefinir Preferências
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             onClick = {
-                if (isDarkMode.value) {
-                    // Redefine o estado do modo escuro para "false" (modo claro)
-                    isDarkMode.value = false
-                    onThemeToggle() // Chama a função para alternar o tema
-                    saveThemePreference(context, false) // Salva a alteração nas SharedPreferences
+                themeViewModel.resetPreferences()
+                animationViewModel.resetPreferences()
+                areNotificationsEnabled.value=false //não funciona nem o verificar notificações
+                if(!areNotificationsEnabled.value){
+                    changeNotification(context)
+                    areNotificationsEnabled.value=false
                 }
-
-                if (areNotificationsEnabled.value) {
-                    areNotificationsEnabled.value = false // Resetando notificações para ativadas
-                    onNotificationsToggle() // Chama a função para alternar as notificações
-                }
+                Toast.makeText(context, "Preferências redefinidas para o padrão.", Toast.LENGTH_SHORT).show()
             },
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFE605D))//para deixar esbranquiçado
-            ,modifier = Modifier
-                .fillMaxWidth()
-
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFE605D)),
+            modifier = Modifier.fillMaxWidth()
         ) {
             Text("Redefinir Preferências")
         }
 
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Text("Tema Atual: ${when (currentTheme) {
-                1 -> "Blue Calm"
-                2 -> "Green Fresh"
-                3 -> "Warm Sunset"
-                else -> "Claro"
-            }}")
+        Spacer(modifier = Modifier.height(16.dp))
 
-            // Botões para alternar entre os temas
-            Button(onClick = { currentTheme = (currentTheme + 1) % 4 }) {
-                Text("Trocar Tema")
-            }
+        val colorSchemes = listOf(
+            LightColorScheme,
+            DarkColorScheme,
+            BlueCalmColorScheme,
+            GreenFreshColorScheme,
+            WarmSunsetColorScheme
+        )
+
+        var currentThemeIndex by remember { mutableStateOf(0) }
+
+
+
+        Button(
+            onClick = {
+                // Incrementa o índice e redefine se ultrapassar o tamanho da lista
+                currentThemeIndex = (currentThemeIndex + 1) % colorSchemes.size
+                themeViewModel.setColorScheme(colorSchemes[currentThemeIndex])
+                Log.d("ThemeToggleButton", "Tema alterado para: ${colorSchemes[currentThemeIndex]}")
+                //Toast.makeText(LocalContext.current, "Tema alterado", Toast.LENGTH_SHORT).show()
+            },
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFE605D)),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Mudar Tema")
         }
     }
 }
+
