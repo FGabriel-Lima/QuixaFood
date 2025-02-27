@@ -1,6 +1,8 @@
 package com.example.quixafood.ui.view.screens
 
 import android.content.Context
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,6 +32,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.quixafood.R
 import com.example.quixafood.viewmodel.AuthViewModel
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.common.api.ApiException
 import kotlinx.coroutines.launch
 
 @Composable
@@ -42,6 +46,31 @@ fun LoginScreen(
     var password by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     val coroutineScope = rememberCoroutineScope()
+
+    // Obtendo o cliente de autenticação do Google
+    val googleSignInClient = remember { authViewModel.getGoogleSignInClient(context) }
+
+    // Lançador para abrir a intent do Google Sign-In
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+        try {
+            val account = task.getResult(ApiException::class.java)
+            val idToken = account.idToken
+            if (idToken != null) {
+                authViewModel.loginWithGoogle(idToken) { success ->
+                    if (success) {
+                        navController.navigate("home")
+                    } else {
+                        errorMessage = "Erro ao autenticar com o Google"
+                    }
+                }
+            }
+        } catch (e: ApiException) {
+            errorMessage = "Erro ao fazer login: ${e.localizedMessage}"
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
@@ -104,6 +133,18 @@ fun LoginScreen(
             colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
         ) {
             Text(text = "Entrar")
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Button(
+            onClick = {
+                val signInIntent = googleSignInClient.signInIntent
+                launcher.launch(signInIntent)
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = "Entrar com Google")
         }
 
         Spacer(modifier = Modifier.height(16.dp))

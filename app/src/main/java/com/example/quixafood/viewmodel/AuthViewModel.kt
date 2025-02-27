@@ -1,8 +1,10 @@
 package com.example.quixafood.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.quixafood.data.AuthRepository
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import kotlinx.coroutines.launch
 
 class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
@@ -49,6 +51,20 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
             val name = repository.getUserName()
             onResult(name)
         }
+    }
+
+    fun loginWithGoogle(
+        idToken: String,
+        onResult: (Boolean) -> Unit
+    ) {
+        viewModelScope.launch {
+            val success = repository.loginWithGoogle(idToken)
+            onResult(success)
+        }
+    }
+
+    fun getGoogleSignInClient(context: Context) : GoogleSignInClient {
+        return repository.getGoogleSigningClient(context)
     }
 
     fun logout() {

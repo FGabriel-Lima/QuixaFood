@@ -2,7 +2,11 @@ package com.example.quixafood.data
 
 import android.content.Context
 import android.util.Log
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
@@ -74,6 +78,47 @@ class AuthRepository {
         } catch (e: Exception) {
             Log.e("error", "Erro ao recuperar nome")
             null
+        }
+    }
+
+    fun getGoogleSigningClient(context: Context): GoogleSignInClient {
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(context.getString(com.example.quixafood.R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+        return  GoogleSignIn.getClient(context, gso)
+    }
+
+    suspend fun loginWithGoogle(
+        idToken: String
+    ) : Boolean {
+        return try {
+            val credential = GoogleAuthProvider.getCredential(idToken, null)
+            val result = auth.signInWithCredential(credential).await()
+            val user = result.user
+
+            user?.let {
+                val uid = it.uid
+                val name = it.displayName ?: "usuário"
+                val email = it.email ?: ""
+
+                val userRef = firestore.collection("users").document(uid)
+                val snapshot = userRef.get().await()
+
+                if(!snapshot.exists()) {
+                    val userData = hashMapOf(
+                        "uid" to uid,
+                        "name" to name,
+                        "email" to email,
+                        "created_at" to System.currentTimeMillis()
+                    )
+                    userRef.set(userData).await()
+                }
+            }
+            true
+        } catch (e: Exception) {
+            Log.e("error", "Erro no login com o Google")
+            false
         }
     }
 
